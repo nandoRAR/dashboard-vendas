@@ -7,47 +7,80 @@ const ChartStackedBar = ({ barLabel, barData, title }) => {
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-        const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+        const textColor = documentStyle.getPropertyValue("--text-color");
+        const textColorSecondary = documentStyle.getPropertyValue(
+            "--text-color-secondary"
+        );
+        const surfaceBorder =
+            documentStyle.getPropertyValue("--surface-border");
         const data = {
             labels: barLabel,
-            datasets: barData
+            datasets: barData,
         };
         const options = {
             maintainAspectRatio: false,
             aspectRatio: 0.8,
             plugins: {
-                tooltips: {
-                    mode: 'index',
-                    intersect: false
+                tooltip: {
+                    mode: "index",
+                    intersect: false,
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || "";
+
+                            if (label) {
+                                label += ": ";
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat("pt-br", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                }).format(context.parsed.y);
+                            }
+                            return label;
+                        },
+                        footer: function (items) {
+                            let sum = 0;
+
+                            items.forEach(function (tooltipItem) {
+                                sum += tooltipItem.parsed.y;
+                            });
+                            return (
+                                "Total: " +
+                                sum.toLocaleString("pt-br", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                })
+                            );
+                        },
+                    },
                 },
                 legend: {
                     labels: {
-                        color: textColor
-                    }
-                }
+                        color: textColor,
+                    },
+                },
             },
             scales: {
                 x: {
                     stacked: true,
                     ticks: {
-                        color: textColorSecondary
+                        color: textColorSecondary,
                     },
                     grid: {
-                        color: surfaceBorder
-                    }
+                        color: surfaceBorder,
+                    },
                 },
                 y: {
                     stacked: true,
                     ticks: {
-                        color: textColorSecondary
+                        color: textColorSecondary,
                     },
                     grid: {
-                        color: surfaceBorder
-                    }
-                }
-            }
+                        color: surfaceBorder,
+                    },
+                },
+            },
         };
 
         setChartData(data);
