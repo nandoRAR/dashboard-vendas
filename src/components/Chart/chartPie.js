@@ -20,6 +20,24 @@ const ChartPie = ({ pieLabel, pieData }) => {
         };
         const options = {
             plugins: {
+                tooltip:{
+                    callbacks:{
+                        label: function (context) {
+                            let label = context.dataset.label || "";
+
+                            if (label) {
+                                label += ": ";
+                            }
+                            if (context.parsed !== null) {
+                                label += new Intl.NumberFormat("pt-br", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                }).format(context.parsed);
+                            }
+                            return label;
+                        }
+                    }
+                },
                 legend: {
                     labels: {
                         usePointStyle: true,
